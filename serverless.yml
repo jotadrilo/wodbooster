@@ -1,0 +1,61 @@
+org: jotadrilo
+app: wodbuster
+service: wodbuster
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  timeout: 60
+
+package:
+  exclude:
+    - node_modules/puppeteer/.local-chromium/**
+
+custom:
+  bucketName: "wodbuster-screenshots"
+
+functions:
+  enroll:
+    handler: src/index.enroll
+    environment:
+      WD_USERNAME_1: ${param:username_1}
+      WD_PASSWORD_1: ${param:password_1}
+      BUCKET_NAME: ${self:custom.bucketName}
+    layers:
+      # https://github.com/shelfio/chrome-aws-lambda-layer
+      - arn:aws:lambda:us-east-1:764866452798:layer:chrome-aws-lambda:38
+    events:
+      - schedule: 'cron(59 21 * * ? *)'
+
+# Create the Bucket and Bucket Policy for the Screenshots
+resources:
+  Resources:
+    ImageBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: ObjectWriter
+    ImageBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref ImageBucket
+        PolicyDocument:
+          Statement:
+            - Action:
+                - s3:GetObject
+              Effect: Allow
+              Principal: "*"
+              Resource: !Sub arn:aws:s3:::${ImageBucket}/*
+            - Action:
+                - s3:PutObject
+              Effect: Allow
+              Principal:
+                AWS:
+                 - !Sub arn:aws:iam::${AWS::AccountId}:role/wodbuster-dev-us-east-1-lambdaRole
+              Resource: !Sub arn:aws:s3:::${ImageBucket}/*

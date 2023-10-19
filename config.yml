@@ -1,0 +1,33 @@
+- name: Joseda
+  username: '{{WB_USERNAME_1}}'
+  password: '{{WB_PASSWORD_1}}'
+  # The current configuration of our WodBuster account allows enrolling three days
+  # since Sunday.
+  offset: 3
+  workouts:
+    monday:
+      - name: Open Box
+        hour: 18:30
+      - name: CrossFit
+        hour: 21:00
+    tuesday:
+      - name: Open Box
+        hour: 18:30
+      - name: CrossFit
+        hour: 20:00
+    wednesday:
+      - name: CrossFit
+        hour: 18:00
+      - name: Open Box
+        hour: 20:00
+    thursday:
+      - name: Open Box
+        hour: 18:30
+      - name: CrossFit
+        hour: 20:00
+    friday:
+      - name: Open Box
+        hour: 18:00
+      - name: CrossFit
+        hour: 20:00
+    saturday: []
