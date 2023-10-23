@@ -1,4 +1,4 @@
-name: Packer Build and Deploy
+name: Build and Deploy
 
 on:
   push:
@@ -11,10 +11,14 @@ env:
   HCP_PROJECT_ID: ${{ secrets.HCP_PROJECT_ID }}
   HCP_ORGANIZATION_ID: ${{ secrets.HCP_ORGANIZATION_ID }}
   HCP_BUCKET_NAME: wodbooster
-  CONFIG_DIRECTORY: ./iac/resources/image
+  TF_CLOUD_ORGANIZATION: jotadrilo
+  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+  TF_WORKSPACE: wodbooster
+  TF_CONFIG_DIRECTORY: ./iac/resources/image
+  PACKER_CONFIG_DIRECTORY: ./iac/deployment
 
 jobs:
-  build-image:
+  packer-build:
     name: Build
     runs-on: ubuntu-latest
     outputs:
@@ -31,11 +35,11 @@ jobs:
           aws-region: us-west-1
 
       - name: Packer Init
-        working-directory: ${{ env.CONFIG_DIRECTORY }}
+        working-directory: ${{ env.PACKER_CONFIG_DIRECTORY }}
         run: packer init .
 
       - name: Packer Build
-        working-directory: ${{ env.CONFIG_DIRECTORY }}
+        working-directory: ${{ env.PACKER_CONFIG_DIRECTORY }}
         run: packer build .
 
       - name: Get HCP Packer Iteration ID from Packer Manifest
@@ -58,3 +62,34 @@ jobs:
         run: |
           channel_name=$( echo ${{github.ref_name}} | sed 's/\./-/g')
           ./create_channel_iteration.sh $HCP_BUCKET_NAME $channel_name "${{ needs.build-image.outputs.iteration_id }}"
+  terraform:
+    name: Terraform Apply
+    needs: ["update-hcp-packer-channel"]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload Configuration
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
+        id: apply-upload
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          directory: ${{ env.TF_CONFIG_DIRECTORY }}
+
+      - name: Create Apply Run
+        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.4
+        id: apply-run
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
+
+      - name: Apply
+        uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.0.4
+        if: fromJSON(steps.apply-run.outputs.payload).data.attributes.actions.IsConfirmable
+        id: apply
+        with:
+          run: ${{ steps.apply-run.outputs.run_id }}
+          comment: Apply Run from GitHub Actions CI ${{ github.sha }}
