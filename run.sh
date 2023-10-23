@@ -42,41 +42,29 @@ launch_window_manager() {
   done
 }
 
-launch_chrome() {
-  export DISPLAY=:10
-  export WB_CHROME_ENDPOINT=127.0.0.1:9222
-
-  Xvfb "$DISPLAY" -ac &
-
+launch_dbus() {
+  sed -i 's/ systemd//g' /etc/nsswitch.conf
   service dbus start
 
   export XDG_RUNTIME_DIR=/run/user/$(id -u)
-
-  mkdir $XDG_RUNTIME_USER
-
+  mkdir -p $XDG_RUNTIME_DIR
   chmod 700 $XDG_RUNTIME_DIR
   chown $(id -un):$(id -gn) $XDG_RUNTIME_DIR
 
   export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
-
   dbus-daemon --session --address=$DBUS_SESSION_BUS_ADDRESS --nofork --nopidfile --syslog-only &
+}
 
+launch_chrome() {
+  export WB_CHROME_ENDPOINT=127.0.0.1:9222
   google-chrome --disable-gpu --no-sandbox --disable-setuid-sandbox --remote-debugging-port=9222 &
-
   sleep 1
 }
 
 launch_xvfb
 launch_window_manager
+launch_dbus
 launch_chrome
 
-if [[ "${WB_USE_LAMBDA_API}" == "0" ]]; then
-  node app.js
-  exit $?
-fi
-
-if [[ -z "${AWS_LAMBDA_RUNTIME_API}" ]]; then
-  exec /usr/local/bin/aws-lambda-rie /usr/bin/npx aws-lambda-ric $1
-else
-  exec /usr/bin/npx aws-lambda-ric $1
-fi
+node local.js
+exit $?
