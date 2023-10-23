@@ -20,3 +20,9 @@ variable "name_prefix" {
   type        = string
   description = "Resources name prefix"
 }
+
+variable "assign_public_ip" {
+  type        = bool
+  description = "Specify true to indicate that instances launched into the subnet should be assigned a public IP address"
+  default     = false
+}
