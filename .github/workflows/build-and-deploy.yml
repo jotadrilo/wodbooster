@@ -43,6 +43,7 @@ jobs:
         run: packer build .
 
       - name: Get HCP Packer Iteration ID from Packer Manifest
+        working-directory: ${{ env.PACKER_CONFIG_DIRECTORY }}
         id: hcp
         run: |
           last_run_uuid=$(jq -r '.last_run_uuid' "./packer_manifest.json")
