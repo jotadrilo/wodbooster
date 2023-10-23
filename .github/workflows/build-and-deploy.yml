@@ -11,6 +11,7 @@ env:
   HCP_PROJECT_ID: ${{ secrets.HCP_PROJECT_ID }}
   HCP_ORGANIZATION_ID: ${{ secrets.HCP_ORGANIZATION_ID }}
   HCP_BUCKET_NAME: wodbooster
+  CONFIG_DIRECTORY: ./iac/resources/image
 
 jobs:
   build-image:
@@ -30,9 +31,11 @@ jobs:
           aws-region: us-west-1
 
       - name: Packer Init
+        working-directory: ${{ env.CONFIG_DIRECTORY }}
         run: packer init .
 
       - name: Packer Build
+        working-directory: ${{ env.CONFIG_DIRECTORY }}
         run: packer build .
 
       - name: Get HCP Packer Iteration ID from Packer Manifest
