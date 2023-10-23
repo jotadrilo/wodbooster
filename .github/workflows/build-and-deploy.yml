@@ -14,12 +14,12 @@ env:
   TF_CLOUD_ORGANIZATION: jotadrilo
   TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
   TF_WORKSPACE: wodbooster
-  TF_CONFIG_DIRECTORY: ./iac/resources/image
-  PACKER_CONFIG_DIRECTORY: ./iac/deployment
+  TF_CONFIG_DIRECTORY: ./iac/deployment
+  PACKER_CONFIG_DIRECTORY: ./iac/resources/image
 
 jobs:
   packer-build:
-    name: Build
+    name: Packer Build
     runs-on: ubuntu-latest
     outputs:
       iteration_id: ${{ steps.hcp.outputs.iteration_id }}
