@@ -163,7 +163,7 @@ class Enroller {
     async enrollPendingDay(page, pd: PendingDay) {
         const result: EnrollResult = {
             name: this.config.name,
-            error: '',
+            errors: [],
             enrolled: [],
         }
 
@@ -177,10 +177,10 @@ class Enroller {
 
         // Reload until we find the expected class
         try {
-            await Utils.reloadForSelector(page, '.rowClase', 15 * 60 * 1000)
+            await Utils.reloadForSelector(page, '.rowHora', 15 * 60 * 1000)
         } catch(err) {
             console.log(err)
-            result.error = `Unable to process day "${pd.day}" (${pd.ts}): ${err}`
+            result.errors = [`Unable to process day "${pd.day}" (${pd.ts}): ${err}`]
             this.result.results.push(result)
             return
         }
@@ -188,16 +188,14 @@ class Enroller {
         for (let w of workouts) {
             try {
                 const enrolled = await this.enrollWorkout(page, w)
-
                 if (enrolled) {
                     result.enrolled.push({workout: w, day: pd})
-                    continue
+                    await Utils.sleep(750)
                 }
             } catch(err) {
                 console.log(err)
+                result.errors.push(`Unable to click "${w.name}" at "${w.hour}" button: ${err}`)
             }
-
-            result.error = `Unable to click "${w.name}" at "${w.hour}" button`
         }
 
         this.result.results.push(result)

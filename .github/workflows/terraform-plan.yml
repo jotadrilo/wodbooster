@@ -1,17 +1,17 @@
-name: "Terraform Plan"
+name: Terraform Plan
 
 on:
   pull_request:
 
 env:
-  TF_CLOUD_ORGANIZATION: "jotadrilo"
-  TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-  TF_WORKSPACE: "wodbooster"
-  CONFIG_DIRECTORY: "./iac/deployment"
+  TF_CLOUD_ORGANIZATION: jotadrilo
+  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+  TF_WORKSPACE: wodbooster
+  CONFIG_DIRECTORY: ./iac/deployment
 
 jobs:
   terraform:
-    name: "Terraform Plan"
+    name: Terraform Plan
     runs-on: ubuntu-latest
     permissions:
       contents: read

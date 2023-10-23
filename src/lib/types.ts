@@ -33,7 +33,7 @@ export interface LambdaBody {
 export interface EnrollResult {
     name: string
     enrolled: Enrolled[]
-    error: string
+    errors: string[]
 }
 
 export interface Config {

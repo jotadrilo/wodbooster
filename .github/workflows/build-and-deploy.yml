@@ -1,0 +1,57 @@
+name: Packer Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+  HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
+  HCP_PROJECT_ID: ${{ secrets.HCP_PROJECT_ID }}
+  HCP_ORGANIZATION_ID: ${{ secrets.HCP_ORGANIZATION_ID }}
+  HCP_BUCKET_NAME: wodbooster
+
+jobs:
+  build-image:
+    name: Build
+    runs-on: ubuntu-latest
+    outputs:
+      iteration_id: ${{ steps.hcp.outputs.iteration_id }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+
+      - name: Packer Init
+        run: packer init .
+
+      - name: Packer Build
+        run: packer build .
+
+      - name: Get HCP Packer Iteration ID from Packer Manifest
+        id: hcp
+        run: |
+          last_run_uuid=$(jq -r '.last_run_uuid' "./packer_manifest.json")
+          build=$(jq -r '.builds[] | select(.packer_run_uuid == "'"$last_run_uuid"'")' "./packer_manifest.json")
+          iteration_id=$(echo "$build" | jq -r '.custom_data.iteration_id')
+          echo "::set-output name=iteration_id::$iteration_id"
+  update-hcp-packer-channel:
+    name: Update HCP Packer channel
+    needs: ["build-image"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create and set channel
+        working-directory: .github/scripts
+        run: |
+          channel_name=$( echo ${{github.ref_name}} | sed 's/\./-/g')
+          ./create_channel_iteration.sh $HCP_BUCKET_NAME $channel_name "${{ needs.build-image.outputs.iteration_id }}"

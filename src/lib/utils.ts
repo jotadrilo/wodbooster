@@ -84,4 +84,5 @@ module.exports = {
     newPage: newPage,
     normEnvTemplate: normEnvTemplate,
     reloadForSelector: reloadForSelector,
+    sleep: sleep,
 }
