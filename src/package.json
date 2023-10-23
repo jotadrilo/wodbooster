@@ -14,7 +14,7 @@
     "puppeteer": "^21.4.0"
   },
   "devDependencies": {
-    "typescript": "^4.0.2"
+    "typescript": "^5.0.0"
   },
   "scripts": {
     "build": "tsc"
