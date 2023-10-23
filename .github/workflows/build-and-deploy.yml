@@ -51,7 +51,7 @@ jobs:
           echo "::set-output name=iteration_id::$iteration_id"
   update-hcp-packer-channel:
     name: Update HCP Packer channel
-    needs: ["build-image"]
+    needs: ["packer-build"]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
