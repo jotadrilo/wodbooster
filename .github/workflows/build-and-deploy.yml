@@ -18,11 +18,9 @@ env:
   PACKER_CONFIG_DIRECTORY: ./iac/resources/image
 
 jobs:
-  packer-build:
-    name: Packer Build
+  packer:
+    name: Run Packer
     runs-on: ubuntu-latest
-    outputs:
-      iteration_id: ${{ steps.hcp.outputs.iteration_id }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -34,38 +32,29 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-1
 
-      - name: Packer Init
-        working-directory: ${{ env.PACKER_CONFIG_DIRECTORY }}
-        run: packer init .
+      - name: Configure Packer
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: "latest"
 
-      - name: Packer Build
-        working-directory: ${{ env.PACKER_CONFIG_DIRECTORY }}
-        run: packer build .
+      - name: Run `packer init`
+        id: init
+        run: packer init ${{ env.PACKER_CONFIG_DIRECTORY }}/wodbooster.pkr.hcl
 
-      - name: Get HCP Packer Iteration ID from Packer Manifest
-        working-directory: ${{ env.PACKER_CONFIG_DIRECTORY }}
-        id: hcp
-        run: |
-          last_run_uuid=$(jq -r '.last_run_uuid' "./packer_manifest.json")
-          build=$(jq -r '.builds[] | select(.packer_run_uuid == "'"$last_run_uuid"'")' "./packer_manifest.json")
-          iteration_id=$(echo "$build" | jq -r '.custom_data.iteration_id')
-          echo "::set-output name=iteration_id::$iteration_id"
-  update-hcp-packer-channel:
-    name: Update HCP Packer channel
-    needs: ["packer-build"]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Run `packer validate`
+        id: validate
+        run: packer validate ${{ env.PACKER_CONFIG_DIRECTORY }}/wodbooster.pkr.hcl
 
-      - name: Create and set channel
-        working-directory: .github/scripts
-        run: |
-          channel_name=$( echo ${{github.ref_name}} | sed 's/\./-/g')
-          ./create_channel_iteration.sh $HCP_BUCKET_NAME $channel_name "${{ needs.build-image.outputs.iteration_id }}"
+      - name: Run `packer build`
+        run: packer build -color=false -on-error=abort ${{ env.PACKER_CONFIG_DIRECTORY }}/wodbooster.pkr.hcl
+        env:
+          HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+          HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
+          HCP_PACKER_BUILD_FINGERPRINT: "run.id.${{ github.run_id }}.run.attempt.${{ github.run_attempt }}"
+
   terraform:
-    name: Terraform Apply
-    needs: ["update-hcp-packer-channel"]
+    name: Run Terraform
     runs-on: ubuntu-latest
     permissions:
       contents: read
