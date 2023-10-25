@@ -70,11 +70,6 @@ build {
       "curl -SLf -o /tmp/main.zip https://github.com/jotadrilo/wodbooster/archive/refs/heads/main.zip",
       "cd $HOME && unzip /tmp/main.zip",
       "cd wodbooster-main/src && yarn install",
-      "mkdir -p ~/.ssh",
-      "chmod 700 ~/.ssh",
-      "touch ~/.ssh/authorized_keys",
-      "chmod 600 ~/.ssh/authorized_keys",
-      "echo ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAZA37Aw69xBtR06z4BT6nEx8XL+yklmFwmELPKS0l9JcwFh6JE2vbMKbw81Aum521eiqNi+4R1aJy+7oSFHmrXLDdO6I7DKXOzyO/cTK4ECBAgFPAvkOqunCM71+rDvyuOfoiKZy7bYcsqsuBRSiT7InIIlY0gi0f5jzP7yRuO4xiFogjVgJdXT08Iw72HzRRa5RBmU24sOSeLCb67A5tGXiIJ9RsFULl1Ekl9+uEET+GTZR7X27RvTNcbYctii9tstyPQbKYwRAInoOGFS8Q92nysw5De18cTfPCcM1UP5oogTGDkzzhjG8l9IzS+UZ5PcBSnxTBhUPl/bRhvnw/ | tee -a ~/.ssh/authorized_keys"
     ]
   }
 }
