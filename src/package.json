@@ -11,7 +11,8 @@
     "js-yaml": "^4.1.0",
     "moment": "^2.29.4",
     "node-fetch": "2",
-    "puppeteer": "^21.4.0"
+    "puppeteer": "^21.4.0",
+    "puppeteer-extra": "^3.3.6"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

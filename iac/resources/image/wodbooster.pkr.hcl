@@ -66,10 +66,13 @@ build {
       "echo \"deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x nodistro main\" | sudo tee /etc/apt/sources.list.d/nodesource.list",
       "sudo apt-get update",
       "sudo apt-get install -y nodejs",
+      "sudo apt-get install -y xfce4 xfce4-goodies tightvncserver",
+      "mkdir ~/.vnc && echo -e \"#!/bin/bash\\nxrdb \\$HOME/.Xresources\\nstartxfce4 &\" >~/.vnc/xstartup",
+      "chmod +x ~/.vnc/xstartup",
+      "vncserver -localhost",
       "sudo npm install -g yarn",
-      "curl -SLf -o /tmp/main.zip https://github.com/jotadrilo/wodbooster/archive/refs/heads/main.zip",
-      "cd $HOME && unzip /tmp/main.zip",
-      "cd wodbooster-main/src && yarn install",
+      "cd $HOME && git clone --depth=1 --single-branch https://github.com/jotadrilo/wodbooster.git",
+      "cd wodbooster/src && yarn install && yarn build",
     ]
   }
 }

@@ -41,6 +41,13 @@ module "wb_vpc" {
       "to_port": 22
       "cidr_blocks": "0.0.0.0/0",
     },
+    {
+      "rule_action": "allow",
+      "protocol": "tcp",
+      "from_port": 5901,
+      "to_port": 5901
+      "cidr_blocks": "0.0.0.0/0",
+    },
   ]
 
   default_security_group_egress = [
@@ -77,10 +84,18 @@ resource "random_shuffle" "subnets" {
 
 resource "aws_instance" "wb_ec2" {
   ami                    = var.ami_id
-  instance_type          = "t3.micro"
+  instance_type          = "t3.large"
   vpc_security_group_ids = [module.wb_vpc.default_security_group_id]
   subnet_id              = random_shuffle.subnets.result[0]
   key_name               = aws_key_pair.wb_kp.key_name
+
+  user_data = <<EOF
+#!/bin/bash
+vncserver -localhost
+cd ~/wodbooster
+git pull origin main
+chrome --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-accelerated-2d-canvas --no-first-run --no-zygote &
+EOF
 
   tags = {
     ProvisionedBy = var.provisioned_by

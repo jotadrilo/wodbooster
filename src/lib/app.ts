@@ -1,10 +1,10 @@
 import type {Result, Config, LambdaResult} from "./types"
-const puppeteer = require('puppeteer')
-// const stealth = require('puppeteer-extra-plugin-stealth')
+
 const fs = require('fs')
 const WodBooster = require('./wodbooster')
 const Utils = require('./utils')
 const yaml = require('js-yaml')
+const puppeteer = require('puppeteer-extra')
 
 async function Run(): Promise<Result[]> {
     let config: Config[]
@@ -18,7 +18,6 @@ async function Run(): Promise<Result[]> {
 
     let result: Result[] = []
     try {
-        // puppeteer.use(stealth())
 
         // Launch a browser or connect to a running one
         let browser
@@ -41,23 +40,23 @@ async function Run(): Promise<Result[]> {
                     '--no-zygote',
                 ],
                 headless: headless,
-                // executablePath: '',
                 ignoreHTTPSErrors: true,
-                // env: {
-                //     DISPLAY: '',
-                // },
+                executablePath: puppeteer.executablePath(),
             }
-            // if (path !== '') {
-            //     opts.executablePath = path
-            // }
-            // if (!headless) {
-            //     console.log(`Launching browser 5`)
-            //     opts.env.DISPLAY = ':10'
-            // }
 
             console.log(`Launching browser (${JSON.stringify(opts)})`)
 
-            browser = await puppeteer.launch()
+            browser = await puppeteer.launch(opts)
+        }
+
+        if (process.env.WB_CHECK_HEADERS === '1') {
+            console.log('Checking headers...')
+
+            browser.newPage().then(async (page) => {
+                await page.goto('https://httpbin.org/headers')
+                console.log(await page.content())
+                await page.close()
+            })
         }
 
         console.log(`Launching Enroll...`)
