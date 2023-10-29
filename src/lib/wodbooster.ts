@@ -68,7 +68,8 @@ class Enroller {
         }
 
         if (process.env.WB_LOCAL_SCREENSHOTS === '1') {
-            const path = moment().format('x') + '.png'
+            const basePath = process.env.WB_LOCAL_SCREENSHOTS_BASE_PATH ? process.env.WB_LOCAL_SCREENSHOTS_BASE_PATH : '/tmp'
+            const path = basePath + '/' + moment().format('x') + '.png'
             await page.screenshot({type: 'png', path: path})
             return {path: path}
         }
