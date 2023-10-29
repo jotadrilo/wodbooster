@@ -67,6 +67,12 @@ class Enroller {
             return {}
         }
 
+        if (process.env.WB_LOCAL_SCREENSHOTS === '1') {
+            const path = moment().format('x') + '.png'
+            await page.screenshot({type: 'png', path: path})
+            return {path: path}
+        }
+
         const params = {
             Body: await page.screenshot({type: 'png'}),
             Bucket: process.env.WB_BUCKET_NAME,

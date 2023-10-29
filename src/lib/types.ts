@@ -4,6 +4,7 @@ export interface PendingDay {
 }
 
 export interface ScreenshotUpload {
+    path?: string
     url?: string
     data?: any
     error?: any
