@@ -19,5 +19,5 @@ variable "aws_account_id" {
 variable "ami_id" {
   type        = string
   description = "AMI ID"
-  default     = "ami-06bfc785d5ceca898"
+  default     = "ami-09c7c115694918e30"
 }
