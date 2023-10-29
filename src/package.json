@@ -10,7 +10,7 @@
     "fs": "^0.0.1-security",
     "js-yaml": "^4.1.0",
     "moment": "^2.29.4",
-    "node-fetch": "2",
+    "node-fetch": "3",
     "puppeteer": "^21.4.0",
     "puppeteer-extra": "^3.3.6"
   },
