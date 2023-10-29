@@ -71,8 +71,12 @@ build {
       "chmod +x ~/.vnc/xstartup",
       "sudo npm install -g yarn",
       "cd $HOME && git clone --depth=1 --single-branch https://github.com/jotadrilo/wodbooster.git",
-      "cd wodbooster/src && yarn install && yarn build",
-      "echo \"59 21 * * * ubuntu WB_LOCAL_SCREENSHOTS=1 WB_CHROME_ENDPOINT=127.0.0.1:9222 WB_CONFIG_FILE=~/wodbooster/config.yml node ~/wodbooster/src/.build/local.js\" | sudo tee /etc/cron.d/wodbooster"
+      "cd wodbooster/src && yarn install",
+      "cd wodbooster/src && yarn build",
+      "mkdir -p ~/wodbooster/logs",
+      "echo \"58 20 * * * cd ~/wodbooster/src && WB_LOCAL_SCREENSHOTS=1 WB_CHROME_ENDPOINT=127.0.0.1:9222 WB_CONFIG_FILE=../config.yml node .build/local.js | tee -a ~/wodbooster/logs/run.log\" | sudo tee /var/spool/cron/crontabs/ubuntu",
+      "sudo chmod 600 /var/spool/cron/crontabs/ubuntu",
+      "sudo chown ubuntu:crontab /var/spool/cron/crontabs/ubuntu"
     ]
   }
 }

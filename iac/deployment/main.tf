@@ -94,7 +94,8 @@ resource "aws_instance" "wb_ec2" {
 vncserver -localhost
 cd ~/wodbooster
 git pull origin main
-chrome --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-accelerated-2d-canvas --no-first-run --no-zygote &
+Xvfb :1 -screen 0 1280x1024x24 &
+DISPLAY=:1 google-chrome --no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-accelerated-2d-canvas --no-first-run --no-zygote --remote-debugging-port=9222 &
 echo -e "#!/bin/bash\n\nexport WB_USERNAME_1=${var.wb_user_1}\nexport WB_PASSWORD_1=${var.wb_pass_1}" | sudo tee /etc/profile.d/wodbooster.sh
 EOF
 

@@ -29,6 +29,7 @@ async function Run(): Promise<Result[]> {
         } else {
             close = true
             const path = process.env.WB_CHROME_PATH ? process.env.WB_CHROME_PATH : puppeteer.executablePath()
+            console.log(`Using executable path (${path})`)
             const headless = process.env.WB_NO_HEADLESS === '1' ? false : 'new'
             const opts = {
                 args: [

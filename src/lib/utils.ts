@@ -52,8 +52,8 @@ async function reloadForSelector(page, selector, timeout) {
 async function newPage(browser) {
     try {
         const page = await browser.newPage()
-        await page.setUserAgent('Mozilla/5.0 (X11 Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36')
-        await page.setViewport({width: 1080, height: 1024})
+        // await page.setUserAgent('Mozilla/5.0 (X11 Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36')
+        // await page.setViewport({width: 1080, height: 1024})
         return page
     } catch (error) {
         console.log(error)
