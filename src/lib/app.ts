@@ -28,7 +28,7 @@ async function Run(): Promise<Result[]> {
             browser = await puppeteer.connect({browserWSEndpoint: endpoint})
         } else {
             close = true
-            const path = process.env.WB_CHROME_PATH ? process.env.WB_CHROME_PATH : ''
+            const path = process.env.WB_CHROME_PATH ? process.env.WB_CHROME_PATH : puppeteer.executablePath()
             const headless = process.env.WB_NO_HEADLESS === '1' ? false : 'new'
             const opts = {
                 args: [
@@ -41,7 +41,7 @@ async function Run(): Promise<Result[]> {
                 ],
                 headless: headless,
                 ignoreHTTPSErrors: true,
-                executablePath: puppeteer.executablePath(),
+                executablePath: path,
             }
 
             console.log(`Launching browser (${JSON.stringify(opts)})`)

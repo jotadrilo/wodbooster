@@ -33,7 +33,7 @@ source "amazon-ebs" "ubuntu" {
 }
 
 build {
-  name = "wodbooster"
+  name    = "wodbooster"
   sources = [
     "source.amazon-ebs.ubuntu"
   ]
@@ -69,10 +69,10 @@ build {
       "sudo apt-get install -y xfce4 xfce4-goodies tightvncserver",
       "mkdir ~/.vnc && echo -e \"#!/bin/bash\\nxrdb \\$HOME/.Xresources\\nstartxfce4 &\" >~/.vnc/xstartup",
       "chmod +x ~/.vnc/xstartup",
-      "vncserver -localhost",
       "sudo npm install -g yarn",
       "cd $HOME && git clone --depth=1 --single-branch https://github.com/jotadrilo/wodbooster.git",
       "cd wodbooster/src && yarn install && yarn build",
+      "echo \"59 21 * * * ubuntu WB_LOCAL_SCREENSHOTS=1 WB_CHROME_ENDPOINT=127.0.0.1:9222 WB_CONFIG_FILE=~/wodbooster/config.yml node ~/wodbooster/src/.build/local.js\" | sudo tee /etc/cron.d/wodbooster"
     ]
   }
 }

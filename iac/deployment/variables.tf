@@ -19,5 +19,17 @@ variable "aws_account_id" {
 variable "ami_id" {
   type        = string
   description = "AMI ID"
-  default     = "ami-0a7273d56bb0f0b39"
+  default     = "ami-0f9b93e48c5462ec0"
+}
+
+variable "wb_user_1" {
+  type        = string
+  description = "The username for the user 1"
+  sensitive   = true
+}
+
+variable "wb_pass_1" {
+  type        = string
+  description = "The password for the user 1"
+  sensitive   = true
 }
