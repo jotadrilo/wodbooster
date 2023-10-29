@@ -13,8 +13,8 @@ env:
   HCP_BUCKET_NAME: wodbooster
   TF_CLOUD_ORGANIZATION: jotadrilo
   TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
-  TF_VAR_WB_USER_1: ${{ secrets.TF_VAR_WB_USER_1 }}
-  TF_VAR_WB_PASS_1: ${{ secrets.TF_VAR_WB_PASS_1 }}
+  TF_VAR_WB_USER_1: '"${{ secrets.TF_VAR_WB_USER_1 }}"'
+  TF_VAR_WB_PASS_1: '"${{ secrets.TF_VAR_WB_PASS_1 }}"'
   TF_WORKSPACE: wodbooster
   TF_CONFIG_DIRECTORY: ./iac/deployment
   PACKER_CONFIG_DIRECTORY: ./iac/resources/image
