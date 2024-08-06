@@ -1,4 +1,4 @@
-FROM node:16 as deps
+FROM node:20 as deps
 
 COPY src/package.json /src/
 COPY src/yarn.lock /src/
@@ -6,7 +6,7 @@ COPY src/yarn.lock /src/
 RUN cd /src && \
     yarn install
 
-FROM node:16-slim
+FROM node:20-slim
 
 ARG DEBIAN_FRONTEND=noninteractive
 
