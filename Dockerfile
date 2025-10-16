@@ -1,4 +1,4 @@
-FROM node:16 as deps
+FROM node:22 as deps
 
 COPY src/package.json /src/
 COPY src/yarn.lock /src/
